@@ -2,6 +2,7 @@ package com.example.ngamingcase.core.logging
 
 import android.util.Log
 import com.example.ngamingcase.BuildConfig
+
 import javax.inject.Inject
 
 class AppLoggerImpl @Inject constructor() : AppLogger {

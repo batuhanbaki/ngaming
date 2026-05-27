@@ -1,18 +1,18 @@
 <resources>
     <string name="app_name">Ngaming Case</string>
-    <string name="posts">Latest Posts</string>
-    <string name="empty">No posts available right now.</string>
-    <string name="post_title_hint">Title</string>
-    <string name="post_body_hint">Description</string>
-    <string name="cancel">Cancel</string>
-    <string name="save">Save</string>
-    <string name="sponsored_content">Sponsored Content</string>
-    <string name="ad_label">Ad</string>
-    <string name="post_image">Post image</string>
-    <string name="error_no_internet">No internet connection. Please try again.</string>
-    <string name="error_secure_connection">Secure connection error. Please try again later.</string>
-    <string name="error_network">Network error. Please check your connection.</string>
-    <string name="error_server">Server error. Please try again later.</string>
-    <string name="error_unknown">Something went wrong. Please try again.</string>
-    <string name="error_validation">Title and description cannot be empty.</string>
+    <string name="posts">Son Gönderiler</string>
+    <string name="empty">Şu anda gönderi yok.</string>
+    <string name="post_title_hint">Başlık</string>
+    <string name="post_body_hint">Açıklama</string>
+    <string name="cancel">İptal</string>
+    <string name="save">Kaydet</string>
+    <string name="sponsored_content">Sponsorlu İçerik</string>
+    <string name="ad_label">Reklam</string>
+    <string name="post_image">Gönderi resmi</string>
+    <string name="error_no_internet">İnternet bağlantısı yok. Lütfen tekrar deneyin.</string>
+    <string name="error_secure_connection">Güvenli bağlantı hatası. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_network">Ağ hatası. Lütfen bağlantınızı kontrol edin.</string>
+    <string name="error_server">Sunucu hatası. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_unknown">Bir şeyler ters gitti. Lütfen tekrar deneyin.</string>
+    <string name="error_validation">Başlık ve açıklama boş bırakılamaz.</string>
 </resources>

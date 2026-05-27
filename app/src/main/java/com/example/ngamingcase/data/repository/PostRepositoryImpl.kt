@@ -21,10 +21,7 @@ class PostRepositoryImpl @Inject constructor(
     override fun observePosts(): Flow<List<Post>> = posts.asStateFlow()
 
     override suspend fun refreshPosts() {
-        if (posts.value.isNotEmpty()) {
-            logger.d("PostsRepository", "refresh skipped: cache already populated")
-            return
-        }
+        posts.value = emptyList()
         logger.i("PostsRepository", "Fetching posts from remote")
         runCatching { apiService.getPosts().map { it.toDomain() } }
             .onSuccess {
@@ -32,7 +29,11 @@ class PostRepositoryImpl @Inject constructor(
                 logger.i("PostsRepository", "Posts fetched successfully. Count: ${it.size}")
             }
             .onFailure {
-                logger.e("PostsRepository", "Failed to fetch posts: ${it::class.java.simpleName} ${it.message}", it)
+                logger.e(
+                    "PostsRepository",
+                    "Failed to fetch posts: ${it::class.java.simpleName} ${it.message}",
+                    it
+                )
                 throw it
             }
     }
@@ -43,7 +44,8 @@ class PostRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updatePost(postId: Int, title: String, body: String) {
-        posts.value = posts.value.map { if (it.id == postId) it.copy(title = title, body = body) else it }
+        posts.value =
+            posts.value.map { if (it.id == postId) it.copy(title = title, body = body) else it }
         logger.i("PostsRepository", "Post updated locally. PostId: $postId")
     }
 }

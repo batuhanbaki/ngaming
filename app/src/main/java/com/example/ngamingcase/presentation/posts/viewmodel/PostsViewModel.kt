@@ -9,6 +9,7 @@ import com.example.ngamingcase.domain.usecase.GetPostsUseCase
 import com.example.ngamingcase.domain.usecase.UpdatePostUseCase
 import com.example.ngamingcase.presentation.common.ErrorMapper
 import com.example.ngamingcase.presentation.posts.model.PostListItem
+import com.example.ngamingcase.presentation.posts.validation.PostInputValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,11 +25,15 @@ class PostsViewModel @Inject constructor(
     private val getPostsUseCase: GetPostsUseCase,
     private val deletePostUseCase: DeletePostUseCase,
     private val updatePostUseCase: UpdatePostUseCase,
+    private val postInputValidator: PostInputValidator,
     private val errorMapper: ErrorMapper,
     private val logger: AppLogger
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<PostsUiState>(PostsUiState.Loading)
     val uiState: StateFlow<PostsUiState> = _uiState.asStateFlow()
+    private val _postEditUiState = MutableStateFlow<PostEditUiState?>(null)
+    val postEditUiState: StateFlow<PostEditUiState?> = _postEditUiState.asStateFlow()
+    private var cachedPosts: List<Post> = emptyList()
 
     init {
         logger.i("PostsViewModel", "initial load triggered")
@@ -57,6 +62,7 @@ class PostsViewModel @Inject constructor(
                     _uiState.value = PostsUiState.Error(message)
                 }
                 .collect { posts ->
+                    cachedPosts = posts
                     _uiState.value = if (posts.isEmpty()) {
                         logger.w("PostsViewModel", "empty state emitted")
                         PostsUiState.Empty
@@ -77,10 +83,62 @@ class PostsViewModel @Inject constructor(
 
     fun updatePost(postId: Int, title: String, body: String) =
         viewModelScope.launch {
-            logger.i("PostsViewModel", "post update requested. PostId: $postId")
-            updatePostUseCase(postId, title, body)
-            logger.d("PostsViewModel", "feed rebuilt after delete/update")
+            logger.i("PostsViewModel", "save clicked. PostId: $postId")
+            val validation = postInputValidator.validate(title, body)
+            if (!validation.isValid) {
+                logger.w("PostsViewModel", "validation failed. PostId: $postId")
+                _postEditUiState.value = _postEditUiState.value?.copy(
+                    title = title,
+                    body = body,
+                    titleError = validation.titleError,
+                    bodyError = validation.bodyError,
+                    isSaving = false,
+                    isSaved = false
+                )
+                return@launch
+            }
+            logger.i("PostsViewModel", "update started. PostId: $postId")
+            _postEditUiState.value = _postEditUiState.value?.copy(
+                title = title,
+                body = body,
+                titleError = null,
+                bodyError = null,
+                isSaving = true,
+                isSaved = false,
+                errorMessage = null
+            )
+            runCatching { updatePostUseCase(postId, title.trim(), body.trim()) }
+                .onSuccess {
+                    logger.i("PostsViewModel", "update success. PostId: $postId")
+                    _postEditUiState.value = _postEditUiState.value?.copy(
+                        isSaving = false,
+                        isSaved = true
+                    )
+                }
+                .onFailure {
+                    logger.e("PostsViewModel", "update failed. PostId: $postId", it)
+                    _postEditUiState.value = _postEditUiState.value?.copy(
+                        isSaving = false,
+                        isSaved = false,
+                        errorMessage = errorMapper.map(it)
+                    )
+                }
         }
+
+    fun onPostClicked(postId: Int) {
+        val post = cachedPosts.firstOrNull { it.id == postId } ?: return
+        logger.i("PostsViewModel", "post edit opened. PostId: $postId")
+        _postEditUiState.value = PostEditUiState(
+            postId = post.id,
+            title = post.title,
+            body = post.body
+        )
+    }
+
+    fun onEditDismissed() {
+        _postEditUiState.value?.postId?.let { logger.d("PostsViewModel", "bottom sheet dismissed. PostId: $it") }
+        _postEditUiState.value = null
+    }
 
     private fun List<Post>.toUiItems(): List<PostListItem> {
         val feedSeed = fold(17) { acc, post -> 31 * acc + post.id }

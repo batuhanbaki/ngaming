@@ -15,4 +15,10 @@
     <string name="error_server">Sunucu hatası. Lütfen daha sonra tekrar deneyin.</string>
     <string name="error_unknown">Bir şeyler ters gitti. Lütfen tekrar deneyin.</string>
     <string name="error_validation">Başlık ve açıklama boş bırakılamaz.</string>
+    <string name="edit_post">Edit Post</string>
+    <string name="post_title_hint_en">Post title</string>
+    <string name="post_body_hint_en">Post description</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="cancel_en">Cancel</string>
+    <string name="post_updated">Post updated</string>
 </resources>

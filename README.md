@@ -1,7 +1,7 @@
 # Ngaming Android Case Study
 
 ## Project summary
-A production-style Kotlin Android app that fetches posts from JSONPlaceholder, renders them in a RecyclerView with mixed post/ad view types, supports swipe delete for posts only, and updates posts from a bottom sheet editor.
+A production-style Kotlin Android app that fetches posts from JSONPlaceholder, renders them in a RecyclerView with mixed post/ad view types, supports swipe delete for posts only, and updates posts from a modern BottomSheetDialogFragment editor.
 
 ## Tech stack
 - Kotlin
@@ -39,9 +39,22 @@ This provides realistic variety while staying stable for the current list snapsh
 - Deleting a post updates domain data and rebuilds the UI feed with logical ad insertion.
 
 ## Update flow
-- Clicking a post opens the detail/update bottom sheet.
-- Saving title/body updates repository state.
-- ViewModel observes posts, rebuilds `PostListItem`, and submits through DiffUtil.
+- Clicking a `PostUi` row calls `viewModel.onPostClicked(postId)` (ad rows are ignored).
+- Fragment observes `postEditUiState` and opens `PostEditBottomSheetFragment` with prefilled title/body.
+- Bottom sheet only collects input and calls `viewModel.updatePost(postId, title, body)`.
+- Validation is centralized in `PostInputValidator` (blank/short title/body) and errors are mapped back to `TextInputLayout` messages.
+- On valid input, `UpdatePostUseCase` updates repository local state, observed posts are remapped with ad insertion, and RecyclerView updates through DiffUtil.
+- On success, the sheet closes and optional success snackbar is shown; on failure, snackbar shows error and sheet remains open.
+
+## Edit popup UI
+- Uses `BottomSheetDialogFragment` with Material `TextInputLayout` + `TextInputEditText` and Material buttons.
+- UX includes modern spacing, clear "Edit Post" title, multiline body editor, and Save/Cancel actions.
+- Save is disabled while saving and validation errors are rendered inline.
+
+## Edit logging
+- `PostEditBottomSheet`: open/dismiss events.
+- `PostsViewModel`: edit opened, save clicked, validation failed, update started/success/failed, bottom sheet dismissed.
+- `UpdatePostUseCase` and `PostsRepository`: update request and local mutation with post id only.
 
 ## Why this structure
 Keeping ad placement in ViewModel-side mapping and keeping adapter purely render-focused preserves separation of concerns and keeps Clean Architecture + MVVM boundaries intact.

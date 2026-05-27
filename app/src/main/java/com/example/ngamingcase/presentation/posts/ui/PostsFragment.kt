@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ngamingcase.R
 import com.example.ngamingcase.databinding.FragmentPostsBinding
-import com.example.ngamingcase.presentation.detail.PostDetailBottomSheet
 import com.example.ngamingcase.core.logging.AppLogger
+import com.example.ngamingcase.presentation.detail.PostEditBottomSheetFragment
 import com.example.ngamingcase.presentation.posts.adapter.PostsAdapter
 import com.example.ngamingcase.presentation.posts.viewmodel.PostsUiState
 import com.example.ngamingcase.presentation.posts.viewmodel.PostsViewModel
@@ -31,9 +31,8 @@ class PostsFragment : Fragment(R.layout.fragment_posts) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPostsBinding.bind(view)
 
-        adapter = PostsAdapter { id, title, body ->
-            logger.i("PostsViewModel", "post item clicked. PostId: $id")
-            PostDetailBottomSheet.newInstance(id, title, body).show(childFragmentManager, "detail")
+        adapter = PostsAdapter { id, _, _ ->
+            viewModel.onPostClicked(id)
         }
         binding.recyclerView.adapter = adapter
         binding.swipeRefresh.setOnRefreshListener { viewModel.refresh() }
@@ -61,6 +60,19 @@ class PostsFragment : Fragment(R.layout.fragment_posts) {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     render(state)
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.postEditUiState.collect { editState ->
+                    val postId = editState?.postId ?: return@collect
+                    if (childFragmentManager.findFragmentByTag("post_edit") == null) {
+                        logger.d("PostsFragment", "opening edit bottom sheet. PostId: $postId")
+                        PostEditBottomSheetFragment.newInstance(postId, editState.title, editState.body)
+                            .show(childFragmentManager, "post_edit")
+                    }
                 }
             }
         }

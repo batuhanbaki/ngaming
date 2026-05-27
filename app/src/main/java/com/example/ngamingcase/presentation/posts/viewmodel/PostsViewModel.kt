@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 @HiltViewModel
 class PostsViewModel @Inject constructor(
@@ -30,20 +31,24 @@ class PostsViewModel @Inject constructor(
         refresh()
     }
 
+    fun refresh() = viewModelScope.launch {
+        _uiState.update { PostsUiState.Loading }
+        runCatching { getPostsUseCase.refresh() }
+            .onFailure { _uiState.value = PostsUiState.Error(it.message ?: "Failed to load posts") }
+    }
+
     private fun observePosts() {
         viewModelScope.launch {
             getPostsUseCase()
                 .catch { _uiState.value = PostsUiState.Error(it.message ?: "Unknown error") }
                 .collect { posts ->
-                    _uiState.value = if (posts.isEmpty()) PostsUiState.Empty else PostsUiState.Success(posts.toUiItems())
+                    _uiState.value = if (posts.isEmpty()) {
+                        PostsUiState.Empty
+                    } else {
+                        PostsUiState.Success(posts.toUiItems())
+                    }
                 }
         }
-    }
-
-    private fun refresh() = viewModelScope.launch {
-        _uiState.update { PostsUiState.Loading }
-        runCatching { getPostsUseCase.refresh() }
-            .onFailure { _uiState.value = PostsUiState.Error(it.message ?: "Failed to load posts") }
     }
 
     fun deletePost(postId: Int) = viewModelScope.launch { deletePostUseCase(postId) }
@@ -52,11 +57,40 @@ class PostsViewModel @Inject constructor(
         viewModelScope.launch { updatePostUseCase(postId, title, body) }
 
     private fun List<Post>.toUiItems(): List<PostListItem> {
+        val feedSeed = fold(17) { acc, post -> 31 * acc + post.id }
+        val random = Random(feedSeed)
+        val adDescriptions = listOf(
+            "Discover more gaming content",
+            "Recommended for you",
+            "Ngaming Partner Content",
+            "Special promotion"
+        )
         val result = mutableListOf<PostListItem>()
+
+        var postsSinceAd = 0
+        var nextAdAfter = randomInterval(random)
+
         forEachIndexed { index, post ->
-            result += PostListItem.PostUi(post)
-            if ((index + 1) % 5 == 0 && index != lastIndex) result += PostListItem.AdUi("ad_${index + 1}")
+            result += PostListItem.PostUi(
+                post = post,
+                imageSeed = post.id.takeIf { it > 0 } ?: (index + 1)
+            )
+            postsSinceAd++
+
+            if (postsSinceAd == nextAdAfter && index != lastIndex) {
+                val description = adDescriptions[random.nextInt(adDescriptions.size)]
+                result += PostListItem.AdUi(
+                    stableId = "ad_after_${post.id}_$postsSinceAd",
+                    title = "Sponsored",
+                    description = description,
+                    ctaText = "Tap to explore"
+                )
+                postsSinceAd = 0
+                nextAdAfter = randomInterval(random)
+            }
         }
         return result
     }
+
+    private fun randomInterval(random: Random): Int = if (random.nextBoolean()) 4 else 5
 }

@@ -1,1 +1,13 @@
-<resources><color name="blue_header">#1976D2</color></resources>
+<resources>
+    <color name="blue_header">#1976D2</color>
+    <color name="surface_bg">#F7F8FA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="text_primary">#1A1C1E</color>
+    <color name="text_secondary">#5E6368</color>
+    <color name="card_stroke">#E5E7EB</color>
+    <color name="shimmer_placeholder">#E7E9EE</color>
+    <color name="ad_bg">#F3F8FF</color>
+    <color name="ad_stroke">#D4E6FF</color>
+    <color name="ad_label_bg">#DCEBFF</color>
+    <color name="ad_label_text">#235FB4</color>
+</resources>

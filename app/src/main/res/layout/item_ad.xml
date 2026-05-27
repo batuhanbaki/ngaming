@@ -20,7 +20,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/circle_bg"
+            android:background="@drawable/shape_bg"
             android:backgroundTint="@color/ad_label_bg"
             android:paddingHorizontal="8dp"
             android:paddingVertical="3dp"

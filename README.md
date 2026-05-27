@@ -50,3 +50,21 @@ Keeping ad placement in ViewModel-side mapping and keeping adapter purely render
 1. Open in Android Studio (JDK 17).
 2. Sync Gradle.
 3. Run app on emulator/device.
+
+## Centralized Logging
+- Added `AppLogger` abstraction with `AppLoggerImpl` so logging is centralized and not scattered via direct `android.util.Log` calls.
+- Logging is debug-only (`BuildConfig.DEBUG`) to minimize/noise in release builds.
+- Sensitive data is intentionally not logged (no tokens/passwords/certificates/request bodies/private user data).
+
+### Logged areas
+- App lifecycle: startup and network monitor initialization.
+- Network monitor: callback registration and connectivity transitions (`available`, `unavailable`, `losing`, `lost`, unregister errors).
+- Network interceptor: request allowed/blocked by connectivity state (host/path only).
+- Retrofit/OkHttp: `HttpLoggingInterceptor` at BASIC in debug, NONE in release.
+- Repository: fetch start/success/failure and local update/delete mutations.
+- Use cases and ViewModel: load/retry state transitions, success/empty/error emissions, update/delete actions.
+- Feed builder: source count, stable seed, ad insertion intervals (4/5), final feed/ad totals.
+- Detail screen: open/save/validation/update/dismiss events.
+- Error mapping: NoInternet, SSL/certificate, HTTP, IO, and unknown error types.
+
+This improves debuggability for startup flow, connectivity handling, API behavior, SSL pinning failures, ad feed generation, and post update/delete operations while preserving architecture boundaries.

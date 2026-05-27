@@ -1,0 +1,108 @@
+# Built application files
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Gradle files
+.gradle/
+build/
+*/build/
+
+# Local configuration
+local.properties
+.env
+.env.*
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+
+# Signing / release configs
+keystore.properties
+signing.properties
+release/
+app/release/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/misc.xml
+.idea/deploymentTargetDropDown.xml
+.idea/render.experimental.xml
+.idea/shelf/
+
+# Android Studio generated files
+captures/
+.externalNativeBuild/
+.cxx/
+*.hprof
+
+# Generated files
+generated/
+out/
+
+# Kotlin
+.kotlin/
+*.kotlin_module
+
+# Kapt / annotation processing
+kapt/
+kaptKotlin/
+annotationProcessor/
+
+# Hilt / Dagger generated outputs
+hilt_aggregated_deps/
+dagger/
+hilt/
+
+# Navigation Safe Args / generated sources
+**/generated/source/
+**/generated/ap_generated_sources/
+
+# Logs
+*.log
+logs/
+logcat.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Google services / Firebase
+google-services.json
+GoogleService-Info.plist
+
+# Test outputs
+test-results/
+reports/
+coverage/
+*.exec
+*.ec
+
+# ProGuard / R8 generated mapping files
+mapping/
+outputs/mapping/
+app/build/outputs/mapping/
+
+# Lint
+lint-results*.xml
+lint-results*.html
+
+# NDK
+obj/
+libs/*/lib*.so
+
+# Misc
+tmp/
+temp/
+.cache/

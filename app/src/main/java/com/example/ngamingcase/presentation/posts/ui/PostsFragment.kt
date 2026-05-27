@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.ngamingcase.R
 import com.example.ngamingcase.databinding.FragmentPostsBinding
 import com.example.ngamingcase.presentation.detail.PostDetailBottomSheet
+import com.example.ngamingcase.core.logging.AppLogger
 import com.example.ngamingcase.presentation.posts.adapter.PostsAdapter
 import com.example.ngamingcase.presentation.posts.viewmodel.PostsUiState
 import com.example.ngamingcase.presentation.posts.viewmodel.PostsViewModel
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class PostsFragment : Fragment(R.layout.fragment_posts) {
+    @javax.inject.Inject lateinit var logger: AppLogger
     private var _binding: FragmentPostsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PostsViewModel by viewModels()
@@ -30,6 +32,7 @@ class PostsFragment : Fragment(R.layout.fragment_posts) {
         _binding = FragmentPostsBinding.bind(view)
 
         adapter = PostsAdapter { id, title, body ->
+            logger.i("PostsViewModel", "post item clicked. PostId: $id")
             PostDetailBottomSheet.newInstance(id, title, body).show(childFragmentManager, "detail")
         }
         binding.recyclerView.adapter = adapter
@@ -48,6 +51,7 @@ class PostsFragment : Fragment(R.layout.fragment_posts) {
                 if (postId != null) {
                     viewModel.deletePost(postId)
                 } else {
+                    logger.w("PostsAdapter", "swipe attempted on ad item. Position: $position")
                     adapter.notifyItemChanged(position)
                 }
             }

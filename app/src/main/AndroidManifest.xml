@@ -1,15 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".NgamingApp"
-        android:allowBackup="true"        android:label="@string/app_name"        android:supportsRtl="true"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_logo"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_logo_round"
+        android:supportsRtl="true"
         android:theme="@style/Theme.NgamingCase">
         <activity
             android:name=".presentation.posts.ui.PostsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

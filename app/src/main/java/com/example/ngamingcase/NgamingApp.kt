@@ -5,3 +5,9 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class NgamingApp : Application()
+{
+
+    override fun onCreate() {
+        super.onCreate()
+    }
+}

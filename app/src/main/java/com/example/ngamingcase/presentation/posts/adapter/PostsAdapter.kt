@@ -21,7 +21,13 @@ class PostsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return if (viewType == 1) PostVH(ItemPostBinding.inflate(inflater, parent, false)) else AdVH(ItemAdBinding.inflate(inflater, parent, false))
+        return if (viewType == 1) PostVH(
+            ItemPostBinding.inflate(
+                inflater,
+                parent,
+                false
+            )
+        ) else AdVH(ItemAdBinding.inflate(inflater, parent, false))
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -33,7 +39,8 @@ class PostsAdapter(
 
     fun getPostIdAt(position: Int): Int? = (getItem(position) as? PostListItem.PostUi)?.post?.id
 
-    inner class PostVH(private val binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class PostVH(private val binding: ItemPostBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(item: PostListItem.PostUi) = with(binding) {
             title.text = item.post.title
             body.text = item.post.body
@@ -41,6 +48,7 @@ class PostsAdapter(
             root.setOnClickListener { onPostClick(item.post.id, item.post.title, item.post.body) }
         }
     }
+
     class AdVH(binding: ItemAdBinding) : RecyclerView.ViewHolder(binding.root)
 
     object Diff : DiffUtil.ItemCallback<PostListItem>() {
@@ -51,6 +59,7 @@ class PostsAdapter(
                 else -> false
             }
 
-        override fun areContentsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean = oldItem == newItem
+        override fun areContentsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean =
+            oldItem == newItem
     }
 }

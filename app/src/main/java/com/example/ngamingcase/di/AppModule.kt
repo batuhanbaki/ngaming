@@ -12,6 +12,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.CertificatePinner
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -27,9 +28,18 @@ object NetworkModule {
         networkConnectionInterceptor: NetworkConnectionInterceptor
     ): PostsApiService {
         val httpLogger = HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BASIC else HttpLoggingInterceptor.Level.NONE
+            level =
+                if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BASIC else HttpLoggingInterceptor.Level.NONE
         }
+        val pinner = CertificatePinner.Builder()
+            .add(
+                "jsonplaceholder.typicode.com",
+                "sha256/e89QAFJvkB7Tn3QGfsNheN8fgTxZgLECjap1xSq628w=",
+                "sha256/kIdp6NNEd8wsugYyyIYFsi1ylMCED3hZbSR8ZFsa/A4="
+            )
+            .build()
         val client = OkHttpClient.Builder()
+            .certificatePinner(pinner)
             .addInterceptor(networkConnectionInterceptor)
             .addInterceptor(httpLogger)
             .build()

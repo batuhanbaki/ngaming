@@ -5,7 +5,7 @@
     android:paddingTop="10dp"
     android:paddingBottom="6dp">
 
-    <com.google.android.material.card.MaterialCardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
@@ -49,5 +49,5 @@
                     android:background="@color/shimmer_placeholder" />
             </LinearLayout>
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.cardview.widget.CardView>
 </com.facebook.shimmer.ShimmerFrameLayout>

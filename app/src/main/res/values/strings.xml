@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Ngaming Case</string>
+    <string name="posts">Posts</string>
+    <string name="empty">No posts available</string>
+    <string name="post_title_hint">Title</string>
+    <string name="post_body_hint">Description</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="sponsored_content">Sponsored Content</string>
+</resources>

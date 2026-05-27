@@ -21,35 +21,41 @@ class PostsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return if (viewType == 1) PostVH(
-            ItemPostBinding.inflate(
-                inflater,
-                parent,
-                false
-            )
-        ) else AdVH(ItemAdBinding.inflate(inflater, parent, false))
+        return if (viewType == 1) {
+            PostVH(ItemPostBinding.inflate(inflater, parent, false))
+        } else {
+            AdVH(ItemAdBinding.inflate(inflater, parent, false))
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)) {
             is PostListItem.PostUi -> (holder as PostVH).bind(item)
-            is PostListItem.AdUi -> Unit
+            is PostListItem.AdUi -> (holder as AdVH).bind(item)
         }
     }
 
-    fun getPostIdAt(position: Int): Int? = (getItem(position) as? PostListItem.PostUi)?.post?.id
+    fun getItemAt(position: Int): PostListItem? = currentList.getOrNull(position)
 
-    inner class PostVH(private val binding: ItemPostBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    fun getPostIdAt(position: Int): Int? = (currentList.getOrNull(position) as? PostListItem.PostUi)?.post?.id
+
+    inner class PostVH(private val binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: PostListItem.PostUi) = with(binding) {
             title.text = item.post.title
             body.text = item.post.body
-            image.load("https://picsum.photos/300/300?random=${bindingAdapterPosition + 1}&grayscale")
+            meta.text = "Post #${item.post.id}"
+            image.load("https://picsum.photos/300/300?random=${item.imageSeed}&grayscale")
             root.setOnClickListener { onPostClick(item.post.id, item.post.title, item.post.body) }
         }
     }
 
-    class AdVH(binding: ItemAdBinding) : RecyclerView.ViewHolder(binding.root)
+    class AdVH(private val binding: ItemAdBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: PostListItem.AdUi) = with(binding) {
+            adTitle.text = item.title
+            adDescription.text = item.description
+            adCta.text = item.ctaText
+        }
+    }
 
     object Diff : DiffUtil.ItemCallback<PostListItem>() {
         override fun areItemsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean =
@@ -59,7 +65,6 @@ class PostsAdapter(
                 else -> false
             }
 
-        override fun areContentsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean =
-            oldItem == newItem
+        override fun areContentsTheSame(oldItem: PostListItem, newItem: PostListItem): Boolean = oldItem == newItem
     }
 }
